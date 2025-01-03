@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Light Computing Demo</title>
+  <title>Light Computing Demo - Extended</title>
   <style>
     /* 전체 페이지 스타일 */
     body {
-      margin: 0; 
+      margin: 0;
       padding: 0;
       font-family: sans-serif;
       background: linear-gradient(to bottom right, #ffffff, #e0e0ff);
@@ -22,40 +22,46 @@
       font-size: 2rem;
     }
 
-    /* 메인 컨테이너 */
     .container {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px;
+      padding: 10px;
     }
 
-    /* 좌측 설명 영역 */
-    .info-box {
-      flex: 1 1 350px;
-      min-width: 320px;
+    /* 왼쪽 패널: 사용자 입력 / 설명 */
+    .controls {
+      flex: 1 1 320px;
+      min-width: 300px;
       margin: 10px;
       background: #fdfdfd;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       padding: 20px;
     }
-    .info-box h2 {
+    .controls h2 {
       margin-top: 0;
       text-align: center;
       font-size: 1.5rem;
     }
-    .info-box p {
-      line-height: 1.6;
+    .controls .slider-group {
       margin-bottom: 1rem;
     }
+    .controls label {
+      display: block;
+      font-weight: bold;
+      margin: 0.5rem 0 0.2rem;
+    }
+    .controls input[type="range"] {
+      width: 100%;
+    }
 
-    /* 우측 Canvas 영역 */
+    /* 오른쪽 패널: Canvas */
     .canvas-box {
-      flex: 1 1 400px;
-      min-width: 350px;
+      flex: 1 1 450px;
+      min-width: 400px;
       margin: 10px;
       display: flex;
       justify-content: center;
@@ -69,10 +75,9 @@
       border-radius: 8px;
     }
 
-    /* 푸터 */
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 15px;
       font-size: 0.9rem;
       color: #666;
       background: rgba(0, 0, 0, 0.04);
@@ -82,97 +87,252 @@
 <body>
 
   <header>
-    <h1>Light Computing Demo Page</h1>
+    <h1>Light Computing Demo - Extended</h1>
   </header>
 
   <div class="container">
-    
-    <!-- 좌측 텍스트 설명 박스 -->
-    <div class="info-box">
-      <h2>What is This?</h2>
+    <!-- 왼쪽 사용자 입력 및 설명 -->
+    <div class="controls">
+      <h2>Simulation Controls</h2>
+
+      <div class="slider-group">
+        <label for="numCirclesRange">Number of Circles</label>
+        <input type="range" id="numCirclesRange" min="1" max="20" value="5">
+        <span id="numCirclesValue"></span>
+      </div>
+
+      <div class="slider-group">
+        <label for="speedRange">Movement Speed</label>
+        <input type="range" id="speedRange" min="1" max="10" value="3">
+        <span id="speedValue"></span>
+      </div>
+
+      <div class="slider-group">
+        <label for="sizeRange">Circle Size</label>
+        <input type="range" id="sizeRange" min="10" max="60" value="30">
+        <span id="sizeValue"></span>
+      </div>
+
+      <div class="slider-group">
+        <label for="colorMixSelect">Color Mixing Mode</label>
+        <select id="colorMixSelect">
+          <option value="none">None (keep original)</option>
+          <option value="add">Additive</option>
+          <option value="avg">Average</option>
+          <option value="max">Max (OR-like)</option>
+          <option value="min">Min (AND-like)</option>
+        </select>
+      </div>
+
       <p>
-        Welcome to our <strong>Light Computing Demo</strong>! <br/>
-        This page demonstrates a simple <em>2D Canvas animation</em> on the right side, 
-        and some text explanation here on the left side.
+        This simulation spawns multiple circles with random initial colors 
+        and positions. They bounce around, and when two circles collide, 
+        their colors may <strong>blend</strong> according to the chosen mode.
       </p>
       <p>
-        In <strong>Light Computing</strong>, we often use <em>color vectors</em> or 
-        <em>small particles</em> that combine to create new colors, 
-        showcasing how basic math or logic operations can be visualized 
-        in a more artistic way. 
+        Try adjusting the <em>Number of Circles</em>, <em>Speed</em>, 
+        and <em>Circle Size</em> to see how it affects the scene.
       </p>
-      <p>
-        Feel free to experiment, read about <em>HLC</em> or other 
-        computational ideas, and watch the canvas animation evolve.
-      </p>
-      <h2>Features</h2>
-      <ul>
-        <li>Canvas-based circle animation</li>
-        <li>Basic linear movement & color shift</li>
-        <li>Easily extensible for color mixing demos</li>
-      </ul>
     </div>
 
-    <!-- 우측 Canvas -->
+    <!-- 오른쪽 Canvas -->
     <div class="canvas-box">
-      <canvas id="myCanvas" width="400" height="300"></canvas>
+      <canvas id="myCanvas" width="500" height="400"></canvas>
     </div>
-
   </div>
 
   <footer>
-    &copy; 2025 HLC / Light Computing. All rights reserved. 
-    <!-- Adjust year/name as needed -->
+    &copy; 2025 Light Computing. Enjoy the extended demo!
   </footer>
 
   <script>
-    // JavaScript for Canvas animation
+    /* Canvas & Simulation Logic */
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');
 
-    let circleX = 50;
-    let circleY = 50;
-    let circleRadius = 30;
-    let moveX = 2;
-    let moveY = 2;
+    // UI elements
+    const numCirclesRange = document.getElementById('numCirclesRange');
+    const numCirclesValue = document.getElementById('numCirclesValue');
+    const speedRange = document.getElementById('speedRange');
+    const speedValue = document.getElementById('speedValue');
+    const sizeRange = document.getElementById('sizeRange');
+    const sizeValue = document.getElementById('sizeValue');
+    const colorMixSelect = document.getElementById('colorMixSelect');
 
-    let hue = 0; // We'll shift color (hue) over time
+    // Circle data
+    let circles = [];
 
+    // Update UI labels
+    function updateLabels() {
+      numCirclesValue.textContent = numCirclesRange.value;
+      speedValue.textContent = speedRange.value;
+      sizeValue.textContent = sizeRange.value;
+    }
+    updateLabels();
+
+    numCirclesRange.addEventListener('input', () => {
+      updateLabels();
+      initCircles();
+    });
+    speedRange.addEventListener('input', updateLabels);
+    sizeRange.addEventListener('input', updateLabels);
+    colorMixSelect.addEventListener('change', () => {
+      // No immediate re-init needed, will apply on collision automatically.
+    });
+
+    // Initialize circles array
+    function initCircles() {
+      const numCircles = parseInt(numCirclesRange.value, 10);
+      circles = [];
+      for(let i = 0; i < numCircles; i++){
+        let radius = parseInt(sizeRange.value, 10);
+        let x = Math.random() * (canvas.width - 2*radius) + radius;
+        let y = Math.random() * (canvas.height - 2*radius) + radius;
+        let speed = parseInt(speedRange.value, 10);
+        // random direction
+        let vx = (Math.random() - 0.5) * speed * 2;
+        let vy = (Math.random() - 0.5) * speed * 2;
+
+        // random color in RGB
+        let r = Math.floor(Math.random() * 256);
+        let g = Math.floor(Math.random() * 256);
+        let b = Math.floor(Math.random() * 256);
+
+        circles.push({
+          x, y,
+          vx, vy,
+          r, g, b,
+          radius
+        });
+      }
+    }
+
+    // Color mixing function
+    function mixColor(c1, c2, mode) {
+      // c1 = {r,g,b}, c2 = {r,g,b}
+      let r1 = c1.r, g1 = c1.g, b1 = c1.b;
+      let r2 = c2.r, g2 = c2.g, b2 = c2.b;
+      
+      switch(mode) {
+        case 'add':
+          // Additive: channel = r1 + r2 (clamp 255)
+          return {
+            r: Math.min(r1 + r2, 255),
+            g: Math.min(g1 + g2, 255),
+            b: Math.min(b1 + b2, 255)
+          };
+        case 'avg':
+          // Average
+          return {
+            r: Math.floor((r1 + r2)/2),
+            g: Math.floor((g1 + g2)/2),
+            b: Math.floor((b1 + b2)/2)
+          };
+        case 'max':
+          // OR-like: channel = max(r1, r2)
+          return {
+            r: Math.max(r1, r2),
+            g: Math.max(g1, g2),
+            b: Math.max(b1, b2)
+          };
+        case 'min':
+          // AND-like: channel = min(r1, r2)
+          return {
+            r: Math.min(r1, r2),
+            g: Math.min(g1, g2),
+            b: Math.min(b1, b2)
+          };
+        default:
+          // None => keep original c1 or c2
+          return c1;
+      }
+    }
+
+    // Circle collision check & color mix
+    function checkCollisions() {
+      const mode = colorMixSelect.value;
+      for(let i=0; i<circles.length; i++){
+        for(let j=i+1; j<circles.length; j++){
+          let ci = circles[i];
+          let cj = circles[j];
+          let dx = ci.x - cj.x;
+          let dy = ci.y - cj.y;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < ci.radius + cj.radius){
+            // collision!
+            // simple bounce: swap velocities
+            let tmpVx = ci.vx; 
+            let tmpVy = ci.vy;
+            ci.vx = cj.vx; 
+            ci.vy = cj.vy;
+            cj.vx = tmpVx; 
+            cj.vy = tmpVy;
+
+            // color mix
+            if(mode !== 'none') {
+              let newColor = mixColor(ci, cj, mode);
+              ci.r = newColor.r; 
+              ci.g = newColor.g; 
+              ci.b = newColor.b;
+              // or do second mix for cj also if we want symmetrical
+              let newColor2 = mixColor(cj, ci, mode);
+              cj.r = newColor2.r; 
+              cj.g = newColor2.g; 
+              cj.b = newColor2.b;
+            }
+          }
+        }
+      }
+    }
+
+    // Animation loop
     function animate() {
-      // Clear
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Background
-      ctx.fillStyle = '#fdfdfd';
+      // Fill background
+      ctx.fillStyle = '#fafafa';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Move the circle
-      circleX += moveX;
-      circleY += moveY;
+      // Move circles
+      for(let c of circles){
+        c.x += c.vx;
+        c.y += c.vy;
 
-      // Bounce off edges
-      if (circleX + circleRadius > canvas.width || circleX - circleRadius < 0) {
-        moveX = -moveX;
+        // bounce on walls
+        if(c.x - c.radius < 0) {
+          c.x = c.radius; 
+          c.vx = -c.vx;
+        }
+        if(c.x + c.radius > canvas.width) {
+          c.x = canvas.width - c.radius;
+          c.vx = -c.vx;
+        }
+        if(c.y - c.radius < 0) {
+          c.y = c.radius;
+          c.vy = -c.vy;
+        }
+        if(c.y + c.radius > canvas.height) {
+          c.y = canvas.height - c.radius;
+          c.vy = -c.vy;
+        }
       }
-      if (circleY + circleRadius > canvas.height || circleY - circleRadius < 0) {
-        moveY = -moveY;
+
+      // Collisions & color mix
+      checkCollisions();
+
+      // Draw circles
+      for(let c of circles){
+        ctx.beginPath();
+        ctx.fillStyle = `rgb(${c.r}, ${c.g}, ${c.b})`;
+        ctx.arc(c.x, c.y, c.radius, 0, 2*Math.PI);
+        ctx.fill();
       }
-
-      // Color shift
-      hue += 1; 
-      if (hue >= 360) hue = 0;
-
-      // Draw circle
-      ctx.beginPath();
-      // Use HSL so we can shift hue easily
-      ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
-      ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
-      ctx.fill();
 
       requestAnimationFrame(animate);
     }
 
-    // Start animation
+    // Init & start
+    initCircles();
     animate();
   </script>
 
