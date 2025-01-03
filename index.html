@@ -1,28 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Light Computing Demo</title>
   <style>
-    body { margin: 0; padding: 0; background: #f0f0f0; }
-    canvas { display: block; margin: 20px auto; border: 1px solid #ccc; }
+    /* 전체 페이지 스타일 */
+    body {
+      margin: 0; 
+      padding: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #ffffff, #e0e0ff);
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.05);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    /* 메인 컨테이너 */
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    /* 좌측 설명 영역 */
+    .info-box {
+      flex: 1 1 350px;
+      min-width: 320px;
+      margin: 10px;
+      background: #fdfdfd;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      padding: 20px;
+    }
+    .info-box h2 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .info-box p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    /* 우측 Canvas 영역 */
+    .canvas-box {
+      flex: 1 1 400px;
+      min-width: 350px;
+      margin: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      background-color: #fafafa;
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    /* 푸터 */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #666;
+      background: rgba(0, 0, 0, 0.04);
+    }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">Light Computing Demo</h1>
-  <canvas id="myCanvas" width="400" height="300"></canvas>
-  
-  <script>
-  // 예: 2D Canvas에 간단한 그림
-  const canvas = document.getElementById('myCanvas');
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'skyblue';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = 'red';
-  ctx.beginPath();
-  ctx.arc(200, 150, 50, 0, 2 * Math.PI);
-  ctx.fill();
+  <header>
+    <h1>Light Computing Demo Page</h1>
+  </header>
+
+  <div class="container">
+    
+    <!-- 좌측 텍스트 설명 박스 -->
+    <div class="info-box">
+      <h2>What is This?</h2>
+      <p>
+        Welcome to our <strong>Light Computing Demo</strong>! <br/>
+        This page demonstrates a simple <em>2D Canvas animation</em> on the right side, 
+        and some text explanation here on the left side.
+      </p>
+      <p>
+        In <strong>Light Computing</strong>, we often use <em>color vectors</em> or 
+        <em>small particles</em> that combine to create new colors, 
+        showcasing how basic math or logic operations can be visualized 
+        in a more artistic way. 
+      </p>
+      <p>
+        Feel free to experiment, read about <em>HLC</em> or other 
+        computational ideas, and watch the canvas animation evolve.
+      </p>
+      <h2>Features</h2>
+      <ul>
+        <li>Canvas-based circle animation</li>
+        <li>Basic linear movement & color shift</li>
+        <li>Easily extensible for color mixing demos</li>
+      </ul>
+    </div>
+
+    <!-- 우측 Canvas -->
+    <div class="canvas-box">
+      <canvas id="myCanvas" width="400" height="300"></canvas>
+    </div>
+
+  </div>
+
+  <footer>
+    &copy; 2025 HLC / Light Computing. All rights reserved. 
+    <!-- Adjust year/name as needed -->
+  </footer>
+
+  <script>
+    // JavaScript for Canvas animation
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let circleX = 50;
+    let circleY = 50;
+    let circleRadius = 30;
+    let moveX = 2;
+    let moveY = 2;
+
+    let hue = 0; // We'll shift color (hue) over time
+
+    function animate() {
+      // Clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background
+      ctx.fillStyle = '#fdfdfd';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Move the circle
+      circleX += moveX;
+      circleY += moveY;
+
+      // Bounce off edges
+      if (circleX + circleRadius > canvas.width || circleX - circleRadius < 0) {
+        moveX = -moveX;
+      }
+      if (circleY + circleRadius > canvas.height || circleY - circleRadius < 0) {
+        moveY = -moveY;
+      }
+
+      // Color shift
+      hue += 1; 
+      if (hue >= 360) hue = 0;
+
+      // Draw circle
+      ctx.beginPath();
+      // Use HSL so we can shift hue easily
+      ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+      ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      requestAnimationFrame(animate);
+    }
+
+    // Start animation
+    animate();
   </script>
+
 </body>
 </html>
